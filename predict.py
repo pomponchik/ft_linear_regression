@@ -18,14 +18,14 @@ def get_coefficients():
             return data['teta_0'], data['teta_1']
         except:
             error(f'format of the file "{full_filename}" is incorrect (this must be json contains dict with 2 keys: "teta_0" and "teta_1", all them is floats or ints)')
-    error(f'the ("{full_filename}") file with coefficients is not exists')
+    error(f'the "{full_filename}" file with coefficients is not exists')
 
 def predict(teta_0, teta_1, number):
     result = teta_0 + teta_1 * number
     return result
 
 def main():
-    number = float(input('Enter mileage (km): '))
+    number = input('Enter mileage (km): ')
     try:
         number = float(number)
     except ValueError:
