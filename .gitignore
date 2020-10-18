@@ -1,3 +1,4 @@
 .DS_Store
 virt
 __pycache__
+coefficients.json
