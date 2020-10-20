@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from config import learning_rate, iters_num
 from config import data_folder, coefficients_filename, data_filename
+import matplotlib.pyplot as plt
 
 
 class LinearRegression:
@@ -10,8 +11,15 @@ class LinearRegression:
         self.folder = folder
         self.df = pd.read_csv(os.path.join(self.folder, filename))
         self.df = self.df.rename(columns={'km': 'x', 'price': 'y'})
+
         # Нормализация входных значений.
-        self.df.x = (self.df['x'] - self.df['x'].mean()) / self.df['x'].std()
+        self.std = self.df['x'].std()
+        self.mean = self.df['x'].mean()
+        self.df['x'] = (self.df['x'] - self.mean) / self.std
+        #self.df['y'] = (self.df['y'] - self.df['y'].mean()) / self.df['y'].std()
+        #self.df['x'] = (self.df['x'] - self.df['x'].min()) / self.df['x'].max()
+        #self.df['y'] = self.df['y'] / self.df['y'].max()
+        print(self.df)
         self.teta_0 = None
         self.teta_1 = None
 
@@ -20,10 +28,12 @@ class LinearRegression:
 
     def new_teta_0(self):
         result = (self.df['y'] - self.df['estimate_price']).mean()
+        #print(result)
         return result
 
     def new_teta_1(self):
         result = ((self.df['y'] - self.df['estimate_price']) * self.df['x']).mean()
+        #print(result)
         return result
 
     def searching_coefficients(self):
@@ -36,9 +46,14 @@ class LinearRegression:
         return self.teta_0, self.teta_1
 
     def save_coefficients(self, filename='coefficients.json', folder='data'):
-        result = {'teta_0': self.teta_0, 'teta_1': self.teta_1}
+        teta_0 = self.teta_0 / self.std
+        teta_1 = -1 * ((self.mean * self.teta_0) / self.std) + self.teta_1
+        result = {'teta_0': teta_0, 'teta_1': teta_1}
         with open(os.path.join(folder, filename), 'w') as file:
             file.write(json.dumps(result))
+        plt.scatter(self.df['x'], self.df['y'])
+        plt.plot(self.df['x'], (self.df['x'] * teta_1) + teta_0, color='red')
+        plt.show()
 
 
 if __name__ == '__main__':

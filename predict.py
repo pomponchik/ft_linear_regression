@@ -21,6 +21,7 @@ def get_coefficients():
     error(f'the "{full_filename}" file with coefficients is not exists')
 
 def predict(teta_0, teta_1, number):
+    print(teta_0, teta_1, number)
     result = teta_0 + teta_1 * number
     return result
 
