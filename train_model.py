@@ -13,12 +13,9 @@ class LinearRegression:
         self.df = self.df.rename(columns={'km': 'x', 'price': 'y'})
 
         # Нормализация входных значений.
-        self.std = self.df['x'].std()
-        self.mean = self.df['x'].mean()
-        self.df['x'] = (self.df['x'] - self.mean) / self.std
-        #self.df['y'] = (self.df['y'] - self.df['y'].mean()) / self.df['y'].std()
-        #self.df['x'] = (self.df['x'] - self.df['x'].min()) / self.df['x'].max()
-        #self.df['y'] = self.df['y'] / self.df['y'].max()
+        self.std_x = self.df['x'].std()
+        self.mean_x = self.df['x'].mean()
+        self.df['x'] = (self.df['x'] - self.mean_x) / self.std_x
         print(self.df)
         self.teta_0 = None
         self.teta_1 = None
@@ -46,14 +43,11 @@ class LinearRegression:
         return self.teta_0, self.teta_1
 
     def save_coefficients(self, filename='coefficients.json', folder='data'):
-        teta_0 = self.teta_0 / self.std
-        teta_1 = -1 * ((self.mean * self.teta_0) / self.std) + self.teta_1
-        result = {'teta_0': teta_0, 'teta_1': teta_1}
+        self.teta_0 = self.teta_0 - self.teta_1 * self.mean_x/self.std_x
+        self.teta_1 = self.teta_1 / self.std_x
+        result = {'teta_0': self.teta_0, 'teta_1': self.teta_1}
         with open(os.path.join(folder, filename), 'w') as file:
             file.write(json.dumps(result))
-        plt.scatter(self.df['x'], self.df['y'])
-        plt.plot(self.df['x'], (self.df['x'] * teta_1) + teta_0, color='red')
-        plt.show()
 
 
 if __name__ == '__main__':
